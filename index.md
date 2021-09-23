@@ -10,7 +10,9 @@ In the embbedded video we demonstrate our running example in the CARLA autonomou
 When running the code, ensure that the Storm model checker (https://www.stormchecker.org/) and its Stormpy bindings (https://moves-rwth.github.io/stormpy/).
 
 For the running example with the street and pedestrain, run:
+
           samplingprism_mdp.py
   
 For the grid-based experiments, run:
+
           car_grid.py
