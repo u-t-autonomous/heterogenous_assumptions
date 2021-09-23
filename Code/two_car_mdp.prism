@@ -1,0 +1,83 @@
+mdp
+
+
+// Length of Street
+const int N=6;
+
+// pedestrian move probability
+const double pL;
+formula p_off = (s_p=0)|(s_p=2);
+formula p_on = (s_p=1);
+formula crash = ((s_p=1)&((s=N-1)|(s2=N-1)))|(s=s2);
+formula action = go_action|stop_action;
+formula action2=go_action2|stop_action2;
+
+module car
+	s : [0..N] init 1;
+	go_action : bool init false;
+	stop_action: bool init false;
+	[go] !action -> 1:(go_action'=true);
+	[stop] !action -> 1:(stop_action'=true);
+	[move] (s<N)&go_action -> (s'=s+1)&(go_action'=false);
+	[move] (s<N)&stop_action -> (s'=s)&(stop_action'=false);
+	[] (s=N) -> true;
+endmodule
+
+module car2
+	s2 : [0..N] init 0;
+	go_action2 : bool init false;
+	stop_action2: bool init false;
+	[go2] !action2 -> 1:(go_action2'=true);
+	[stop2] !action2 -> 1:(stop_action2'=true);
+	[move] (s2<N)&go_action2 -> (s2'=s2+1)&(go_action2'=false);
+	[move] (s2<N)&stop_action2 -> (s2'=s2)&(stop_action2'=false);
+	[] (s2=N) -> true;
+endmodule
+
+//module car2 = car [s2]
+
+//module car2
+//	s2 : [0..N] init 1;
+//	[go2] (s2<N) -> (s2'=s2+1);
+//	[stop2] (s2<N) -> (s2'=s2);
+//	[] (s2=N) -> true;
+//endmodule
+
+module pedestrian
+	s_p : [0..2] init 0;
+	[move] (s_p=0) -> pL:(s_p'=1) + 1-pL:(s_p'=0);
+	//[stop] (s_p=0) -> pL:(s_p'=1) + 1-pL:(s_p'=0);
+	[move] (s_p=1) -> pL/2:(s_p'=2)+pL/2:(s_p'=0) + 1-pL:(s_p'=1);
+	//[stop] (s_p=1) -> pL/2:(s_p'=2)+pL/2:(s_p'=0) + 1-pL:(s_p'=1);
+	[move] (s_p=2) -> pL:(s_p'=1) + 1-pL:(s_p'=2); 
+	//[stop] (s_p=2) -> pL:(s_p'=1) + 1-pL:(s_p'=2); 
+endmodule
+
+label "Crash" = (crash=true);
+label "Goal" = (s=N)|(s2=N);
+
+label "s0" = (s=0);
+label "s1" = (s=1);
+label "s2" = (s=2);
+label "s3" = (s=3);
+label "s4" = (s=4);
+label "s5" = (s=5);
+label "s6" = (s=6);
+
+label "x0" = (s2=0);
+label "x1" = (s2=1);
+label "x2" = (s2=2);
+label "x3" = (s2=3);
+label "x4" = (s2=4);
+label "x5" = (s2=5);
+label "x6" = (s2=6);
+
+
+label "p0" = (s_p = 0);
+label "p1" = (s_p = 1);
+label "p2" = (s_p = 2);
+
+label "go1" = go_action;
+label "stop1" = stop_action;
+label "go2" = go_action2;
+label "stop2" = stop_action2;

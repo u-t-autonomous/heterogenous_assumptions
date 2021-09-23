@@ -1,0 +1,106 @@
+mdp
+
+const int xSize = 3;
+const int ySize = 3;
+const int obsXmin = 1;
+const int obsYmin = 2;
+const int obsXmax = 2;
+const int obsYmax = 3;
+const double pL=0.5;
+formula T = (xA0 = xSize & yA0 = ySize)& (xA1 = xSize-1 & yA1 = ySize);
+formula Cr = (xA0 = xObs & yA0 = yObs)|(xA0=xA1 & yA0= yA1)| (xA1 = xObs & yA1 = yObs);
+formula action0 = ua0|da0|ra0|la0;
+formula action1 = ua1|da1|ra1|la1;
+module car0
+	xA0: [0..xSize] init 0;
+	yA0: [0..ySize] init 0;
+	ua0: bool init false;
+	da0: bool init false;
+	ra0: bool init false;
+	la0: bool init false;
+
+	[up0] (!T & !Cr & !action0) -> (ua0'=true);
+	[down0] (!T & !Cr & !action0) -> (da0'=true);
+	[left0] (!T & !Cr & !action0) -> (la0'=true);
+	[right0] (!T & !Cr & !action0) -> (ra0'=true);
+
+	[move] (yA0 < ySize & ua0) -> (ua0'=false) & (yA0'=yA0+1);
+	[move] (yA0 = ySize & ua0) -> (ua0'=false) & (yA0'=yA0);
+	[move] (xA0 < xSize & ra0) -> (ra0'=false) & (xA0'=xA0+1);
+	[move] (xA0 = xSize & ra0) -> (ra0'=false) & (xA0'=xA0);
+	[move] (yA0 = 0 & da0) -> (da0'=false) & (yA0'=yA0);
+	[move] (yA0 > 0 & da0) -> (da0'=false) & (yA0'=yA0-1);
+	[move] (xA0 = 0 & la0) -> (la0'=false) & (xA0'=xA0);
+	[move] (xA0 > 0 & la0) -> (la0'=false) & (xA0'=xA0-1);
+
+	[doneT] T -> 1:true;
+	[doneC] Cr-> 1:true;
+endmodule
+
+module car1
+	xA1: [0..xSize] init 1;
+	yA1: [0..ySize] init 0;
+	ua1: bool init false;
+	da1: bool init false;
+	ra1: bool init false;
+	la1: bool init false;
+
+	[up1] (!T & !Cr & !action1) -> (ua1'=true);
+	[down1] (!T & !Cr & !action1) -> (da1'=true);
+	[left1] (!T & !Cr & !action1) -> (la1'=true);
+	[right1] (!T & !Cr & !action1) -> (ra1'=true);
+
+	[move] (yA1 < ySize & ua1) -> (ua1'=false) & (yA1'=yA1+1);
+	[move] (yA1 = ySize & ua1) -> (ua1'=false) & (yA1'=yA1);
+	[move] (xA1 < xSize & ra1) -> (ra1'=false) & (xA1'=xA1+1);
+	[move] (xA1 = xSize & ra1) -> (ra1'=false) & (xA1'=xA1);
+	[move] (yA1 = 0 & da1) -> (da1'=false) & (yA1'=yA1);
+	[move] (yA1 > 0 & da1) -> (da1'=false) & (yA1'=yA1-1);
+	[move] (xA1 = 0 & la1) -> (la1'=false) & (xA1'=xA1);
+	[move] (xA1 > 0 & la1) -> (la1'=false) & (xA1'=xA1-1);
+
+	[doneT] T -> 1:true;
+	[doneC] Cr-> 1:true;
+endmodule
+
+module obstacle
+	xObs: [obsXmin..obsXmax] init obsXmin;
+	yObs: [obsYmin..obsYmax] init obsYmin;
+	[move] true -> (1-pL):true+ pL/4:(xObs'=1)&(yObs'=2)+ pL/4:(xObs'=1)&(yObs'=3)+ pL/4:(xObs'=2)&(yObs'=2)+ pL/4:(xObs'=2)&(yObs'=3);
+endmodule
+
+label "Crash" = (Cr=true);
+label "Goal" = (T=true);
+
+label "xA0_0" = (xA0=0);
+label "yA0_0" = (yA0=0);
+label "xA0_1" = (xA0=1);
+label "yA0_1" = (yA0=1);
+label "xA0_2" = (xA0=2);
+label "yA0_2" = (yA0=2);
+label "xA0_3" = (xA0=3);
+label "yA0_3" = (yA0=3);
+label "up0" = (ua0=true);
+label "down0" = (da0=true);
+label "left0" = (la0=true);
+label "right0" = (ra0=true);
+label "xA1_0" = (xA1=0);
+label "yA1_0" = (yA1=0);
+label "xA1_1" = (xA1=1);
+label "yA1_1" = (yA1=1);
+label "xA1_2" = (xA1=2);
+label "yA1_2" = (yA1=2);
+label "xA1_3" = (xA1=3);
+label "yA1_3" = (yA1=3);
+label "up1" = (ua1=true);
+label "down1" = (da1=true);
+label "left1" = (la1=true);
+label "right1" = (ra1=true);
+label "xO0" = (xObs=0);
+label "yO0" = (yObs=0);
+label "xO1" = (xObs=1);
+label "yO1" = (yObs=1);
+label "xO2" = (xObs=2);
+label "yO2" = (yObs=2);
+label "xO3" = (xObs=3);
+label "yO3" = (yObs=3);
